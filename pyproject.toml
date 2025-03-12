@@ -17,3 +17,8 @@ CI = "https://github.com/koaning/mosync/actions"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

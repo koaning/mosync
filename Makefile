@@ -14,3 +14,9 @@ pypi:
 
 check:
 	uv run pytest tests.py
+
+pages: 
+	uv run marimo export html-wasm demo/notebook.py -o docs/index.html --mode edit
+
+clean:
+	rm -rf __pycache__ .pytest_cache dist

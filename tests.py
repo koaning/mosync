@@ -34,7 +34,7 @@ async def sometimes_failing_func(x):
         raise ValueError(f"Error processing even number {x}")
     return x * 2
 
-# Test async_map_with_retry functionality
+
 @pytest.mark.asyncio
 async def test_async_map_success():
     items = [1, 2, 3, 4, 5]
