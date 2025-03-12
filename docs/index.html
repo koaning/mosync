@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="./assets/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="./assets/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="./assets/Lora-VariableFont_wght-B2ootaw-.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Regular-CxL0S8W7.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/PTSans-Bold-D9fedIX3.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Regular-BTCkDNvf.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Medium-DU3aDxX5.ttf" as="font" crossorigin="anonymous" />
+    <link rel="preload" href="./assets/FiraMono-Bold-CLVRCuM9.ttf" as="font" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        var scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          var element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          var hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          var newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((entries) => {
+          setHeight();
+        });
+        resizeObserver.observe(obj.contentWindow.document.body);
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <marimo-mode data-mode='edit' hidden></marimo-mode>
+    <marimo-version data-version='0.11.17' hidden></marimo-version>
+    <marimo-user-config data-config='{"completion": {"activate_on_typing": true, "copilot": false}, "display": {"theme": "light", "dataframes": "rich", "code_editor_font_size": 14, "cell_output": "above", "default_width": "medium"}, "formatting": {"line_length": 79}, "keymap": {"preset": "default", "overrides": {}}, "runtime": {"auto_instantiate": true, "auto_reload": "off", "on_cell_change": "autorun", "watcher_on_save": "lazy", "output_max_bytes": 8000000, "std_stream_max_bytes": 1000000, "pythonpath": []}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "package_management": {"manager": "pip"}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}}' data-overrides='{}' hidden></marimo-user-config>
+    <marimo-app-config data-config='{"width": "medium"}' hidden></marimo-app-config>
+    <marimo-server-token data-token='123' hidden></marimo-server-token>
+    <title>notebook</title>
+    <script type="module" crossorigin src="./assets/index-anQQzJqA.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-D9rFQmzZ.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    <marimo-code hidden="" data-show-code="false">import%20marimo%0A%0A__generated_with%20%3D%20%220.11.17%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20import%20asyncio%0A%20%20%20%20from%20mosync%20import%20async_map_with_retry%0A%20%20%20%20return%20async_map_with_retry%2C%20asyncio%2C%20mo%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%20Enter%20%60mosync%60%20%0A%0A%20%20%20%20In%20this%20notebook%20we%20will%20explore%20a%20small%20utility%20that%20could%20help%20you%20run%20batches%20of%20async%20workfloads.%20We%20made%20this%20because%20it%20felt%20like%20a%20missing%20cog%20in%20a%20lot%20of%20LLM%20experiments%20that%20we%20do%20inside%20of%20marimo%20notebooks.%20Some%20LLM%20vendors%20do%20not%20provide%20a%20batch%20endpoint%2C%20in%20which%20case%20you%20are%20better%20off%20just%20sending%20batches%20of%20requests%20async.%20It%20will%20also%20work%20for%20many%20other%20use-cases%2C%20but%20this%20is%20what%20we%20had%20in%20mind%20when%20we%20made%20this.%20%0A%0A%20%20%20%20So%20as%20a%20base%20example%2C%20lets%20pretend%20that%20we%20are%20making%20HTTP%20requests.%20The%20%60delayed_identity%60%20function%20can%20mimic%20this.%20%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(asyncio)%3A%0A%20%20%20%20async%20def%20delayed_double(x)%3A%0A%20%20%20%20%20%20%20%20await%20asyncio.sleep(1)%0A%20%20%20%20%20%20%20%20return%20x%20*%202%0A%20%20%20%20return%20(delayed_double%2C)%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20You%20can%20pass%20this%20function%20to%20%60async_map_with_retry%60%20that%20comes%20from%20%60mosync%60.%20This%20function%20takes%20care%20of%20all%20the%20async%2Ferror%2Flogging%20stuff%20for%20you%20and%20also%20gives%20you%20a%20pretty%20widget%20to%20look%20at%20while%20you%20are%20waiting.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Aasync%20def%20_(async_map_with_retry%2C%20delayed_double)%3A%0A%20%20%20%20results%20%3D%20await%20async_map_with_retry(%0A%20%20%20%20%20%20%20%20range(200)%2C%20%0A%20%20%20%20%20%20%20%20delayed_double%2C%20%0A%20%20%20%20%20%20%20%20max_concurrency%3D10%2C%20%0A%20%20%20%20%20%20%20%20description%3D%22Showing%20a%20simple%20demo%22%0A%20%20%20%20)%0A%20%20%20%20return%20(results%2C)%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20The%20results%20are%20a%20list%20of%20%60ProcessResult%60%20objects.%20We%20have%20one%20for%20every%20input%20and%20these%20allow%20us%20to%20also%20log%20any%20errors%20that%20might%20have%20happened.%20Pay%20attention%20though!%20We%20do%20not%20guarantee%20the%20original%20order%2C%20so%20the%20items%20may%20have%20been%20shuffled%20around%20a%20bit.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(results)%3A%0A%20%20%20%20len(results)%2C%20results%5B0%5D%2C%20results%5B1%5D%2C%20results%5B2%5D%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22Let's%20do%20one%20more%20demo%20that%20shows%20what%20errors%20might%20look%20like.%20There%20is%20a%20retry%20mechanic%20in%20the%20library%20that%20tries%20to%20help%20you%20out%2C%20but%20it's%20also%20good%20to%20see%20what%20happens%20when%20there%20are%20just%20too%20many%20bugs.%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(asyncio)%3A%0A%20%20%20%20import%20random%20%0A%0A%20%20%20%20async%20def%20maybe_error(x)%3A%0A%20%20%20%20%20%20%20%20await%20asyncio.sleep(0.1)%0A%20%20%20%20%20%20%20%20if%20random.random()%20%3C%200.25%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20raise%20ValueError(%22oh%20noes!%22)%0A%20%20%20%20%20%20%20%20return%20x%20*%202%0A%20%20%20%20return%20maybe_error%2C%20random%0A%0A%0A%40app.cell%0Aasync%20def%20_(async_map_with_retry%2C%20maybe_error)%3A%0A%20%20%20%20err_results%20%3D%20await%20async_map_with_retry(%0A%20%20%20%20%20%20%20%20range(200)%2C%20%0A%20%20%20%20%20%20%20%20maybe_error%2C%20%0A%20%20%20%20%20%20%20%20max_concurrency%3D10%2C%20%0A%20%20%20%20%20%20%20%20max_retries%3D2%2C%0A%20%20%20%20%20%20%20%20description%3D%22Showing%20a%20simple%20demo%22%0A%20%20%20%20)%0A%20%20%20%20return%20(err_results%2C)%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22The%20retry%20mechanics%20can%20really%20help%2C%20but%20it's%20also%20great%20to%20have%20the%20errors%20available%20as%20an%20entry%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(err_results)%3A%0A%20%20%20%20%5Be%20for%20e%20in%20err_results%20if%20e.error%5D%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code></head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

@@ -5,11 +5,18 @@ build:
 install: 
 	python -m pip install uv
 	uv venv
-	uv pip install -e ".[test]"
+	uv pip install -e .
+	uv pip install pytest pytest-asyncio
 
 pypi:
 	uv build
 	uv publish
 
 check:
-	uv run pytest
+	uv run pytest tests.py
+
+pages: 
+	uv run marimo export html-wasm demo/notebook.py -o docs/index.html --mode edit
+
+clean:
+	rm -rf __pycache__ .pytest_cache dist

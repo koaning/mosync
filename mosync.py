@@ -130,7 +130,6 @@ def async_map_with_retry(
     on_success: Optional[Callable] = None,
     on_failure: Optional[Callable] = None,
     show_progress: bool = True,
-    progress_kind: str = "marimo",
     description: str = "Processing items",
     logger: Optional[logging.Logger] = None
 ) -> List[ProcessResult[T, R]]:
@@ -156,8 +155,6 @@ def async_map_with_retry(
         List of ProcessResult objects containing the original items, results, and any errors
     """
     logger = logger or logging.getLogger(__name__)
-    if progress_kind == "tqdm":
-        import tqdm
 
     async def main():
         # Create semaphore for concurrency control
@@ -181,8 +178,7 @@ def async_map_with_retry(
         # Set up progress bar if requested
         if show_progress:
             results = []
-            pbar = mo.status.progress_bar(total=len(tasks), title=description) if progress_kind == "marimo" else tqdm.tqdm(total=len(tasks), desc=description)
-            with pbar:
+            with mo.status.progress_bar(total=len(tasks), title=description) as pbar:
                 for task in asyncio.as_completed(tasks):
                     result = await task
                     results.append(result)
