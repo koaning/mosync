@@ -5,7 +5,8 @@ build:
 install: 
 	python -m pip install uv
 	uv venv
-	uv pip install -e ".[test]"
+	uv pip install -e .
+	uv pip install pytest pytest-asyncio
 
 pypi:
 	uv build
