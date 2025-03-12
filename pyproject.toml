@@ -1,0 +1,19 @@
+[project]
+name = "mosync"
+version = "0.1.0"
+description = "Utility for sync batch jobs in marimo"
+readme = "README.md"
+authors = [{name = "Vincent D. Warmerdam"}]
+license = {text = "MIT"}
+dependencies = [
+    "marimo",
+]
+
+[project.urls]
+Homepage = "https://github.com/koaning/mosync"
+Changelog = "https://github.com/koaning/mosync/releases"
+Issues = "https://github.com/koaning/mosync/issues"
+CI = "https://github.com/koaning/mosync/actions"
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio"]
