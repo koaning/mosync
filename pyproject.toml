@@ -14,3 +14,6 @@ Homepage = "https://github.com/koaning/mosync"
 Changelog = "https://github.com/koaning/mosync/releases"
 Issues = "https://github.com/koaning/mosync/issues"
 CI = "https://github.com/koaning/mosync/actions"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
