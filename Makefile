@@ -13,4 +13,4 @@ pypi:
 	uv publish
 
 check:
-	uv run pytest
+	uv run pytest tests.py
