@@ -1,8 +1,30 @@
 import asyncio
 import random
 import logging
-import tqdm
-from typing import List, Dict, Any, Callable, Optional
+
+import marimo as mo
+from typing import List, Dict, Any, Callable, Optional, TypeVar, Generic
+from dataclasses import dataclass
+
+T = TypeVar('T')
+R = TypeVar('R')
+
+@dataclass
+class ProcessResult(Generic[T, R]):
+    """Result of processing an item with retry logic.
+    
+    Attributes:
+        item: The original item that was processed
+        result: The result of processing, if successful
+        error: The last error encountered, if any
+    """
+    item: T
+    result: Optional[R]
+    error: Optional[Exception]
+    
+    def is_success(self) -> bool:
+        """Check if the processing was successful."""
+        return self.error is None and self.result is not None
 
 async def process_with_retry(
     func, 
@@ -15,7 +37,7 @@ async def process_with_retry(
     on_success=None,
     on_failure=None,
     logger=None
-):
+) -> ProcessResult:
     """Process a single item with retry logic and backoff."""
     logger = logger or logging.getLogger(__name__)
     attempts = 0
@@ -33,7 +55,7 @@ async def process_with_retry(
             if on_success:
                 on_success(item, result)
 
-            return item, result, None
+            return ProcessResult(item=item, result=result, error=None)
 
         except Exception as e:
             attempts += 1
@@ -61,7 +83,7 @@ async def process_with_retry(
                     f"Final error: {str(last_exception)}"
                 )
 
-    return item, None, last_exception
+    return ProcessResult(item=item, result=None, error=last_exception)
 
 async def async_map_worker(
     items, 
@@ -97,8 +119,8 @@ async def async_map_worker(
     return tasks
 
 def async_map_with_retry(
-    items: List[Dict[Any, Any]],
-    func: Callable,
+    items: List[T],
+    func: Callable[[T], R],
     max_concurrency: int = 10,
     max_retries: int = 3,
     initial_backoff: float = 1.0,
@@ -108,15 +130,16 @@ def async_map_with_retry(
     on_success: Optional[Callable] = None,
     on_failure: Optional[Callable] = None,
     show_progress: bool = True,
+    progress_kind: str = "marimo",
     description: str = "Processing items",
     logger: Optional[logging.Logger] = None
-):
+) -> List[ProcessResult[T, R]]:
     """
-    Map an async function over a list of dictionaries with progress tracking and retry.
+    Map an async function over a list of items with progress tracking and retry.
 
     Args:
-        items: List of dictionaries to process
-        func: Async function that takes a dictionary and returns a result
+        items: List of items to process
+        func: Async function that takes an item and returns a result
         max_concurrency: Maximum number of concurrent tasks
         max_retries: Maximum number of retry attempts
         initial_backoff: Initial backoff time in seconds
@@ -130,9 +153,11 @@ def async_map_with_retry(
         logger: Optional logger for detailed logging
 
     Returns:
-        List of tuples (original_dict, result_or_None, exception_or_None)
+        List of ProcessResult objects containing the original items, results, and any errors
     """
     logger = logger or logging.getLogger(__name__)
+    if progress_kind == "tqdm":
+        import tqdm
 
     async def main():
         # Create semaphore for concurrency control
@@ -156,14 +181,20 @@ def async_map_with_retry(
         # Set up progress bar if requested
         if show_progress:
             results = []
-            with mo.status.progress_bar(total=len(tasks), title=description) as progress_bar:
+            pbar = mo.status.progress_bar(total=len(tasks), title=description) if progress_kind == "marimo" else tqdm.tqdm(total=len(tasks), desc=description)
+            with pbar:
                 for task in asyncio.as_completed(tasks):
                     result = await task
                     results.append(result)
-                    progress_bar.update()
+                    pbar.update()
             return results
         else:
             # Without progress bar, just gather all results
             return await asyncio.gather(*tasks)
 
     return main()
+
+__all__ = [
+    "async_map_with_retry",
+    "ProcessResult",
+]
